@@ -40,11 +40,20 @@ public class DashboardUI extends JFrame implements ActionListener
 
 	private JLabel statusLabel;
 
+	public JMenu recentMenu;
+
 	private boolean usingSpecGraph;
 
 	public void setStatusLabel(String statusText)
 	{
 		statusLabel.setText("\t" + statusText);
+	}
+
+	public static DashboardUI instance;
+
+	public static DashboardUI getInstance()
+	{
+		return instance;
 	}
 
 	public DashboardUI()
@@ -58,6 +67,7 @@ public class DashboardUI extends JFrame implements ActionListener
 		contentPane.setOpaque(true);
 		setContentPane(contentPane);
 		pack();
+		instance = this;
 	}
 
 	public JSplitPane getGraphSplitPane()
@@ -137,6 +147,35 @@ public class DashboardUI extends JFrame implements ActionListener
 		usingSpecGraph = useSpecGraph;
 	}
 
+	public void updateRecentMenu()
+	{
+		recentMenu.removeAll();
+		for (int i = 0; i < Config.LAST_TOPOLOGY_FILE.length; i++)
+		{
+			if (Config.LAST_TOPOLOGY_FILE[i] != null && Config.LAST_TOPOLOGY_FILE[i].exists())
+			{
+				String buttonName = Config.LAST_TOPOLOGY_FILE[i].getName();
+				if (Config.LAST_SPEC_FILE[i] != null && Config.LAST_SPEC_FILE[i].exists())
+				{
+					buttonName += " - " + Config.LAST_SPEC_FILE[i].getName();
+				}
+				
+				final File topFile = Config.LAST_TOPOLOGY_FILE[i];
+				final File specFile = Config.LAST_SPEC_FILE[i];
+				final boolean doAnalysis = Config.LAST_DO_ANALYSIS[i];
+
+				JMenuItem item = new JMenuItem(buttonName);
+				recentMenu.add(item);
+				item.addActionListener(e -> {
+					AppSession.getInstance().load(topFile, specFile, doAnalysis);
+				});
+			}
+		}
+
+		recentMenu.revalidate();
+    recentMenu.repaint();
+	}
+
 	private void setupMenu()
 	{
 		JMenuBar menuBar = new JMenuBar();
@@ -145,6 +184,11 @@ public class DashboardUI extends JFrame implements ActionListener
 //		fileMenu.add("Open").addActionListener(this);
 		fileMenu.add("Load").addActionListener(this);
 		fileMenu.add("Load Last").addActionListener(this);
+
+		recentMenu = new JMenu("Recent");
+		fileMenu.add(recentMenu);
+		updateRecentMenu();
+
 		fileMenu.add("Save").addActionListener(this);
 
 		JMenu exportMenu = (JMenu) fileMenu.add(new JMenu("Export"));
@@ -269,6 +313,13 @@ public class DashboardUI extends JFrame implements ActionListener
 			// power to getting tired of repositioning all of the nodes!
 			case "Save":
 //				ApplicationSettings.saveAll(this);
+				for (int i = 0; i < recentMenu.getItemCount(); i++) {
+					JMenuItem item = recentMenu.getItem(i);
+					if (item != null) {
+							System.out.println("Item " + i + ": " + item.getText());
+					}
+				}
+
 				break;
 
 			case "Load":
@@ -282,8 +333,10 @@ public class DashboardUI extends JFrame implements ActionListener
 			{
 //				ApplicationSettings.loadAll(this);
 
-				if (Config.LAST_TOPOLOGY_FILE != null)
-					AppSession.getInstance().load(Config.LAST_TOPOLOGY_FILE, Config.LAST_SPEC_FILE, Config.LAST_DO_ANALYSIS);
+				if (Config.LAST_TOPOLOGY_FILE != null && Config.LAST_TOPOLOGY_FILE.length > 0
+				  && Config.LAST_SPEC_FILE != null && Config.LAST_SPEC_FILE.length > 0
+				  && Config.LAST_DO_ANALYSIS != null && Config.LAST_DO_ANALYSIS.length > 0)
+					AppSession.getInstance().load(Config.LAST_TOPOLOGY_FILE[0], Config.LAST_SPEC_FILE[0], Config.LAST_DO_ANALYSIS[0]);
 			}
 			break;
 

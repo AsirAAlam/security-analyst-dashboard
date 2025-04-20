@@ -35,7 +35,7 @@ public class SystemAnalysis
 			{
 				searchingQueue.add(target);
 
-				String inputFile = Config.LAST_TOPOLOGY_FILE.getAbsolutePath();
+				String inputFile = Config.LAST_TOPOLOGY_FILE[0].getAbsolutePath();
 				AttackChainSearchQuery query = new AttackChainSearchQuery(inputFile, target, res ->
 				{
 					List<String[]> attackChains = res.getAttackChains();

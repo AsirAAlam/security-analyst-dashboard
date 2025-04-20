@@ -103,9 +103,26 @@ public class AppSession extends GraphHandler
 	{
 		clear();
 
-		Config.LAST_TOPOLOGY_FILE = topGraphFile;
-		Config.LAST_SPEC_FILE = specGraphFile;
-		Config.LAST_DO_ANALYSIS = analysis;
+		// Only shift queue if the loaded file is different from the last loaded file
+		if (!topGraphFile.getAbsolutePath().equals(Config.LAST_TOPOLOGY_FILE[0].getAbsolutePath()) ||
+				!specGraphFile.getAbsolutePath().equals(Config.LAST_SPEC_FILE[0].getAbsolutePath()))
+		{
+			for (int i = Config.LAST_SIZE - 1; i > 0; i--)
+			{
+				Config.LAST_TOPOLOGY_FILE[i] = Config.LAST_TOPOLOGY_FILE[i - 1];
+				Config.LAST_SPEC_FILE[i] = Config.LAST_SPEC_FILE[i - 1];
+				Config.LAST_DO_ANALYSIS[i] = Config.LAST_DO_ANALYSIS[i - 1];
+			}
+	
+			Config.LAST_TOPOLOGY_FILE[0] = topGraphFile;
+			Config.LAST_SPEC_FILE[0] = specGraphFile;
+			Config.LAST_DO_ANALYSIS[0] = analysis;
+			
+			SwingUtilities.invokeLater(() -> {
+				DashboardUI.getInstance().updateRecentMenu();
+			});
+		}
+
 
 		if (topGraphFile.exists())
 		{

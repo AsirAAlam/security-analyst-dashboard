@@ -26,10 +26,11 @@ public class Config
 
 	public static final File FILE_SETTINGS = new File(HIDDEN_DATA, "settings.xml");
 
+	public static final int LAST_SIZE = 3;
 	public static File LAST_FILE_LOAD_DIRECTORY = null;
-	public static File LAST_TOPOLOGY_FILE = null;
-	public static File LAST_SPEC_FILE = null;
-	public static boolean LAST_DO_ANALYSIS = true;
+	public static File[] LAST_TOPOLOGY_FILE = null;
+	public static File[] LAST_SPEC_FILE = null;
+	public static boolean[] LAST_DO_ANALYSIS = null;
 	public static boolean showDeletedNodes = false;
 	public static boolean showHiddenNodes = false;
 	public static boolean showCAPECNodes = true;
@@ -39,7 +40,6 @@ public class Config
 	public static double AV_NODE_SCALE = 2.0D;
 	public static double AV_LAYOUT_WEIGHT_DEF = 0.1D;
 	public static double AV_LAYOUT_MIN_SIZE = 2D;
-
 
 	public static void setup()
 	{
@@ -56,12 +56,22 @@ public class Config
 
 			String s = properties.getProperty("last_file_load", "./");
 			LAST_FILE_LOAD_DIRECTORY = new File(s);
-			s = properties.getProperty("last_top_graph", "");
-			LAST_TOPOLOGY_FILE = new File(s);
-			s = properties.getProperty("last_spec_graph", "");
-			LAST_SPEC_FILE = new File(s);
-			s = properties.getProperty("last_do_analysis", "true");
-			LAST_DO_ANALYSIS = s.equalsIgnoreCase("true");
+
+			LAST_TOPOLOGY_FILE = new File[LAST_SIZE];
+			LAST_SPEC_FILE = new File[LAST_SIZE];
+			LAST_DO_ANALYSIS = new boolean[LAST_SIZE];
+
+			for (int i = 0; i < LAST_SIZE; i++)
+			{
+				s = properties.getProperty("last_top_graph" + (i + 1), "");
+				LAST_TOPOLOGY_FILE[i] = new File(s);
+
+				s = properties.getProperty("last_spec_graph" + (i + 1), "");
+				LAST_SPEC_FILE[i] = new File(s);
+
+				s = properties.getProperty("last_do_analysis" + (i + 1), "true");
+				LAST_DO_ANALYSIS[i] = s.equalsIgnoreCase("true");
+			}
 
 		}
 		catch (IOException e)
@@ -85,11 +95,24 @@ public class Config
 			if (LAST_FILE_LOAD_DIRECTORY != null)
 				properties.setProperty("last_file_load", LAST_FILE_LOAD_DIRECTORY.toString());
 			if (LAST_TOPOLOGY_FILE != null)
-				properties.setProperty("last_top_graph", LAST_TOPOLOGY_FILE.toString());
+			{
+				for (int i = 0; i < LAST_SIZE; i++)
+				{
+					if (LAST_TOPOLOGY_FILE[i] != null)
+						properties.setProperty("last_top_graph" + (i + 1), LAST_TOPOLOGY_FILE[i].toString());
+				}
+			}
 			if (LAST_SPEC_FILE != null)
-				properties.setProperty("last_spec_graph", LAST_SPEC_FILE.toString());
-			properties.setProperty("last_do_analysis", "" + LAST_DO_ANALYSIS);
-
+			{
+				for (int i = 0; i < LAST_SIZE; i++)
+				{
+					if (LAST_SPEC_FILE[i] != null)
+						properties.setProperty("last_spec_graph" + (i + 1), LAST_SPEC_FILE[i].toString());
+				}
+			}
+			if (LAST_DO_ANALYSIS != null)
+				for (int i = 0; i < LAST_SIZE; i++)
+					properties.setProperty("last_do_analysis" + (i + 1), "" + LAST_DO_ANALYSIS[i]);
 
 			properties.store(new FileWriter(FILE_SETTINGS), null);
 		}

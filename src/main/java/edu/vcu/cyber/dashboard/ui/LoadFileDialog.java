@@ -114,8 +114,8 @@ public class LoadFileDialog extends JPanel implements ActionListener
 		topFileTF = new JTextField();
 		topFileTF.setPreferredSize(fileSize);
 
-		if (Config.LAST_TOPOLOGY_FILE != null)
-			topFileTF.setText(Config.LAST_TOPOLOGY_FILE.toString());
+		if (Config.LAST_TOPOLOGY_FILE != null && Config.LAST_TOPOLOGY_FILE.length > 0)
+			topFileTF.setText(Config.LAST_TOPOLOGY_FILE[0].toString());
 
 		browseTopBtn = new JButton("...");
 		browseTopBtn.addActionListener(this);
@@ -127,8 +127,8 @@ public class LoadFileDialog extends JPanel implements ActionListener
 		specFileTF = new JTextField();
 		specFileTF.setPreferredSize(fileSize);
 
-		if (Config.LAST_TOPOLOGY_FILE != null)
-			specFileTF.setText(Config.LAST_SPEC_FILE.toString());
+		if (Config.LAST_TOPOLOGY_FILE != null && Config.LAST_TOPOLOGY_FILE.length > 0)
+			specFileTF.setText(Config.LAST_SPEC_FILE[0].toString());
 
 		browseSpecBtn = new JButton("...");
 		browseSpecBtn.addActionListener(this);
@@ -136,7 +136,7 @@ public class LoadFileDialog extends JPanel implements ActionListener
 		browseSpecBtn.setPreferredSize(browseSize);
 
 		doAnalysisCheck = new JCheckBox("Perform analysis after opening");
-		doAnalysisCheck.setSelected(Config.LAST_DO_ANALYSIS);
+		doAnalysisCheck.setSelected(Config.LAST_DO_ANALYSIS[0]);
 
 	}
 
