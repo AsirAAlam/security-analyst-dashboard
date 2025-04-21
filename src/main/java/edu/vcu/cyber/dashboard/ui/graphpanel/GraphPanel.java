@@ -84,6 +84,12 @@ public class GraphPanel extends JPanel
 			viewPanel.addMouseWheelListener(mouseManager);
 			viewPanel.addFocusListener(mouseManager);
 			viewPanel.addKeyListener(mouseManager);
+			JButton centerButton = new JButton("Recenter View");
+			centerButton.addActionListener(e -> {
+            // Center the graph when the button is clicked
+            viewer.getDefaultView().getCamera().resetView();
+        });
+			viewPanel.add(centerButton);
 			
 			viewPanel.setForeLayoutRenderer(new HoverMenuRenderer(graph));
 			
